@@ -71,6 +71,7 @@ services:
       - ./payments-service:/usr/src/app
     depends_on:
       - rabbitmq
+      - postgres-payments
     ports:
       - "3001:3001"
     environment:
@@ -89,6 +90,7 @@ services:
       - ./shipping-service:/usr/src/app
     depends_on:
       - rabbitmq
+      - postgres-shipping
     ports:
       - "3002:3002"
     environment:
