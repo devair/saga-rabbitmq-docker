@@ -1,16 +1,15 @@
 import { DataSource } from "typeorm";
-import { Payment } from "./entity/Payment";
+import * as dotenv from 'dotenv'
 
-export const AppDataSource = new DataSource({
-  type: "postgres",
-  host: process.env.POSTGRES_HOST || "localhost",
-  port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT) : 5432, 
-  username: process.env.POSTGRES_USER || "user",
-  password: process.env.POSTGRES_PASSWORD || "password",
-  database: process.env.POSTGRES_DB || "payments",
+dotenv.config();
+
+const AppDataSource = new DataSource({
+  type: "mongodb",
+  url: process.env.MONGO_URI,    
+  database: process.env.DB_DATABASE,
   synchronize: true,
-  logging: false,
-  entities: [Payment],
-  migrations: [],
-  subscribers: [],
-});
+  logging: true,    
+  entities: ['**/persistence/entity/*.ts'],
+})
+
+export { AppDataSource } 

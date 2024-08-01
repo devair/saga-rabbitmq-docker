@@ -19,16 +19,16 @@ services:
     volumes:
       - postgres-orders-data:/var/lib/postgresql/data
   
-  postgres-payments:
-    image: postgres
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: payments
+  mongo-payments:
+    image: mongo    
     ports:
-      - "5434:5432" # Map the container's port 5432 to port 5434 on the host
+      - '27017:27017'
+
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=docker
+      - MONGODB_INITDB_ROOT_PASSWORD=docker
     volumes:
-      - postgres-payments-data:/var/lib/postgresql/data
+      - mongo-payments-data:/data/db  
   
   postgres-shipping:
     image: postgres
@@ -71,15 +71,12 @@ services:
       - ./payments-service:/usr/src/app
     depends_on:
       - rabbitmq
-      - postgres-payments
+      - mongo-payments
     ports:
       - "3001:3001"
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
-      - POSTGRES_HOST=postgres-payments
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - MONGO_URI=mongodb://mongo:27017/pagamentos
       - POSTGRES_DB=payments
 
   shipping-service:
@@ -103,5 +100,5 @@ services:
       
 volumes:
   postgres-orders-data:
-  postgres-payments-data:
+  mongo-payments-data:
   postgres-shipping-data:

@@ -1,8 +1,11 @@
 import "reflect-metadata";
 import express from "express";
 import { AppDataSource } from "./ormconfig";
-import { Payment } from "./entity/Payment";
 import amqp from 'amqplib';
+import * as dotenv from 'dotenv'
+import { PaymentEntity } from "./infra/persistence/entity/PaymentEntity";
+
+dotenv.config();
 
 const app = express();
 app.use(express.json());
@@ -19,8 +22,9 @@ AppDataSource.initialize().then(async () => {
   channel.consume(queue, async (msg) => {
     if (msg !== null) {
       const order = JSON.parse(msg.content.toString());
-
-      const paymentRepository = AppDataSource.getRepository(Payment);
+      console.log(order)
+      
+      const paymentRepository = AppDataSource.getRepository(PaymentEntity);
       const payment = paymentRepository.create({ orderId: order.id, status: "processed" });
       await paymentRepository.save(payment);
 
@@ -30,7 +34,7 @@ AppDataSource.initialize().then(async () => {
 
       channel.ack(msg);
     }
-  });
+  })
 
   app.listen(3001, () => {
     console.log("Payments service listening on port 3001");
