@@ -1,6 +1,6 @@
 
 import amqp from 'amqplib'
-import { ICreateOrderPublisher } from '../../../domain/ports/ICreateOrderPublisher';
+import { ICreateOrderPublisher } from '../../../domain/repository/ICreateOrderPublisher';
 
 export class RabbitMQCreateOrderPublisher implements ICreateOrderPublisher {
 

@@ -1,5 +1,5 @@
 import { Order } from "../../domain/entity/Order"
-import { ICreateOrderPublisher } from "../../domain/ports/ICreateOrderPublisher"
+import { ICreateOrderPublisher } from "../../domain/repository/ICreateOrderPublisher"
 import { IOrderRepository } from "../../domain/repository/IOrderRepository"
 import { ICreateOrderUseCase } from "../../domain/useCase/ICreateOrderUseCase"
 import { AppDataSource } from "../../infra/persistence/ormconfig"
