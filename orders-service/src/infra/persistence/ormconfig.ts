@@ -1,5 +1,4 @@
 import { DataSource } from "typeorm";
-import { Order } from "./entity/Order";
 import * as dotenv from 'dotenv'
 
 dotenv.config();
@@ -13,7 +12,7 @@ export const AppDataSource = new DataSource({
   database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: false,
-  entities: [Order],
+  entities: ['**/persistence/entity/*.ts'],
   migrations: [],
   subscribers: [],
 });
