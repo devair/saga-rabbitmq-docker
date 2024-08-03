@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node src/application/app.ts"
+    "start": "ts-node src/application/index.ts",
+    "dev": "ts-node src/application/index.ts"
   },
   "dependencies": {
     "@types/node": "^22.0.0",

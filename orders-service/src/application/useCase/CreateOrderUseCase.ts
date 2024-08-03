@@ -2,18 +2,15 @@ import { Order } from "../../domain/entity/Order"
 import { ICreateOrderPublisher } from "../../domain/repository/ICreateOrderPublisher"
 import { IOrderRepository } from "../../domain/repository/IOrderRepository"
 import { ICreateOrderUseCase } from "../../domain/useCase/ICreateOrderUseCase"
+import { RabbitMQPublisher } from "../../infra/messaging/rabbitmq/RabbitMQPublisher"
 import { AppDataSource } from "../../infra/persistence/ormconfig"
 
 
 export class CreateOrderUserCase implements ICreateOrderUseCase{        
     constructor(
         private readonly repository: IOrderRepository,
-        private createOrderPublisher: ICreateOrderPublisher
+        private publisher: RabbitMQPublisher
     ){}
-
-    async getCreateOrderPublisher() {
-        return this.createOrderPublisher
-    }
 
     async execute(orderData: any): Promise<Order> {
         const queryRunner = AppDataSource.createQueryRunner()
@@ -25,7 +22,7 @@ export class CreateOrderUserCase implements ICreateOrderUseCase{
             const createdOrder = await this.repository.create(orderData)
 
             // Publicar evento de pedido criado
-            await this.createOrderPublisher.publish(createdOrder)
+            await this.publisher.publish("orderCreated", createdOrder)
 
             // Confirma a transação
             await queryRunner.commitTransaction()            
