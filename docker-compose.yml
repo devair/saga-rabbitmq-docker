@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
+    volumes:
+      - ./api-gateway:/usr/src/app     
     ports:
       - '2999:2999'
     depends_on:
