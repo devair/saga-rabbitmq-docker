@@ -30,7 +30,7 @@ export const createApp = async () => {
     const createOrderUseCase = new CreateOrderUserCase(orderRepository, publisher)
     const orderController = new OrdersController(createOrderUseCase)
 
-    app.use('/orders', orderRouters(orderController))
+    app.use('/', orderRouters(orderController))
 
     app.listen(3000, () => {
         console.log("Orders service listening on port 3000");

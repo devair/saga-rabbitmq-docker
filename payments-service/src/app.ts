@@ -17,7 +17,7 @@ AppDataSource.initialize().then(async () => {
   const channel = await connection.createChannel();
   const queue = 'orderCreated';
 
-  await channel.assertQueue(queue, { durable: false });
+  await channel.assertQueue(queue, { durable: true });
 
   channel.consume(queue, async (msg) => {
     if (msg !== null) {

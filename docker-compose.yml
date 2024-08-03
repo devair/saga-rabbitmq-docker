@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    ports:
+      - '2999:2999'
+    depends_on:
+      - orders-service
+      - payments-service
+      - shipping-service
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -20,7 +31,8 @@ services:
       - postgres-orders-data:/var/lib/postgresql/data
   
   mongo-payments:
-    image: mongo    
+    image: mongo
+    container_name: mongo    
     ports:
       - '27017:27017'
 
@@ -61,8 +73,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=orders    
-    
-
+  
   payments-service:
     build:
       context: .

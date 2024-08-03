@@ -1,16 +1,19 @@
 {
-    "compilerOptions": {
-      "target": "es2020",
-      "module": "NodeNext",
-      "strict": true,
-      "esModuleInterop": true,
-      "emitDecoratorMetadata": true,
-      "experimentalDecorators": true,
-      "outDir": "./dist",
-      "skipLibCheck": true,
-      "moduleResolution": "NodeNext"
-    },
-    "include": ["src"],
-    "exclude": ["node_modules"]
-  }
-  
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "outDir": "./dist",
+    "skipLibCheck": true,
+    "moduleResolution": "NodeNext"
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
