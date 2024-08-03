@@ -20,8 +20,10 @@ AppDataSource.initialize().then(async () => {
     if (msg !== null) {
       const payment = JSON.parse(msg.content.toString());
 
+      console.log(payment)
+
       const shippingRepository = AppDataSource.getRepository(Shipping);
-      const shipping = shippingRepository.create({ paymentId: payment.id, status: "shipped" });
+      const shipping = shippingRepository.create({ paymentId: payment._id, status: "shipped" });
       await shippingRepository.save(shipping);
 
       channel.ack(msg);

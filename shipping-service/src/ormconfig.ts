@@ -1,16 +1,18 @@
 import { DataSource } from "typeorm";
-import { Shipping } from "./entity/Shipping";
+import * as dotenv from 'dotenv'
+
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: process.env.POSTGRES_HOST || "localhost",
-  port: process.env.POSTGRES_PORT ? parseInt(process.env.POSTGRES_PORT) : 5432, 
-  username: process.env.POSTGRES_USER || "user",
-  password: process.env.POSTGRES_PASSWORD || "password",
-  database: process.env.POSTGRES_DB || "shipping",
+  host: process.env.POSTGRES_HOST,
+  port: Number(process.env.POSTGRES_PORT), 
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
   synchronize: true,
   logging: false,
-  entities: [Shipping],
+  entities: ['**/entity/*.ts'],
   migrations: [],
   subscribers: [],
 });
