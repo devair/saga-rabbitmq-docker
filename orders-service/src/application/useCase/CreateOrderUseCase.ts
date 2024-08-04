@@ -1,15 +1,14 @@
 import { Order } from "../../domain/entity/Order"
-import { IOrderCreatedQueueAdapterOUT } from "../../domain/messaging/IOrderCreatedQueueAdapterOUT"
+import { IOrderQueueAdapterOUT } from "../../domain/messaging/IOrderQueueAdapterOUT"
 import { IOrderRepository } from "../../domain/repository/IOrderRepository"
 import { ICreateOrderUseCase } from "../../domain/useCase/ICreateOrderUseCase"
-
 import { AppDataSource } from "../../infra/persistence/ormconfig"
 
 
 export class CreateOrderUserCase implements ICreateOrderUseCase{        
     constructor(
         private readonly repository: IOrderRepository,
-        private publisher: IOrderCreatedQueueAdapterOUT
+        private publisher: IOrderQueueAdapterOUT
     ){}
 
     async execute(orderData: any): Promise<Order> {

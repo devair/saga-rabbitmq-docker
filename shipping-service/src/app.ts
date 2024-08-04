@@ -14,7 +14,7 @@ AppDataSource.initialize().then(async () => {
   const channel = await connection.createChannel();
   const queue = 'paymentProcessed';
 
-  await channel.assertQueue(queue, { durable: false });
+  await channel.assertQueue(queue, { durable: true });
 
   channel.consume(queue, async (msg) => {
     if (msg !== null) {
@@ -23,7 +23,7 @@ AppDataSource.initialize().then(async () => {
       console.log(payment)
 
       const shippingRepository = AppDataSource.getRepository(Shipping);
-      const shipping = shippingRepository.create({ paymentId: payment._id, status: "shipped" });
+      const shipping = shippingRepository.create({ paymentId: payment._id, status: "shipped", orderId: payment.orderId });
       await shippingRepository.save(shipping);
 
       channel.ack(msg);

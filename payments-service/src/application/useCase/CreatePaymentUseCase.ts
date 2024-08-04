@@ -15,7 +15,7 @@ export class CreatePaymentUserCase implements ICreatePaymentUseCase {
 
         await queryRunner.startTransaction()
         try {
-            const createdPayment = this.repository.create(paymentData)
+            const createdPayment = await this.repository.create(paymentData)
 
             // Publicar evento de pagamento criado
             await this.publisher.publish(JSON.stringify(createdPayment))

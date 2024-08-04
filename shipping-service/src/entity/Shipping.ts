@@ -8,6 +8,9 @@ export class Shipping {
   @Column({name: "payment_id", type: "varchar"})
   paymentId: string | undefined;
 
+  @Column({name: "order_id", type: "numeric"})
+  orderId: number | undefined;
+
   @Column({ type: "varchar"})
   status: string | undefined;
 }

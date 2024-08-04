@@ -1,11 +1,11 @@
 import express from "express"
+import * as dotenv from 'dotenv'
+import amqplib from "amqplib";
 import { OrdersController } from "../interface/controllers/OrdersController";
 import { orderRouters } from "../interface/routers/OrdersRoutes";
 import { TypeOrmOrdersRepository } from "../infra/persistence/repository/TypeOrmOrdersRepository";
 import { AppDataSource } from "../infra/persistence/ormconfig";
 import { OrderEntity } from "../infra/persistence/entity/OrderEntity";
-import * as dotenv from 'dotenv'
-import amqplib from "amqplib";
 import { CreateOrderUserCase } from "../application/useCase/CreateOrderUseCase";
 import { OrderQueueAdapterOUT } from "../infra/messaging/rabbitmq/OrderQueueAdapterOUT";
 

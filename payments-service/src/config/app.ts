@@ -8,6 +8,8 @@ import { CreatePaymentController } from "../interface/controllers/payments/Creat
 import { AppDataSource } from "../infra/persistence/ormconfig";
 import { PaymentEntity } from "../infra/persistence/entity/PaymentEntity";
 import { paymentsRouters } from "../interface/routers/PaymentsRouters";
+import { OrderCreatedQueueAdapterIN } from  "../infra/messaging/OrderCreatedQueueAdapterIN"
+
 
 dotenv.config()
 
@@ -20,6 +22,7 @@ export const createApp = async () => {
 
     // Configura Persistencia
     const dataSource = await AppDataSource.initialize()
+
     const paymentsRepository = new TypeOrmPaymentsRepository(dataSource.getRepository(PaymentEntity))
 
     // Configura mensageria
@@ -31,29 +34,9 @@ export const createApp = async () => {
     const createPaymentUseCase = new CreatePaymentUserCase(paymentsRepository, publisher)
     const createPaymentController = new CreatePaymentController(createPaymentUseCase)
 
-    // Configura consumidor
-    const connection = rabbitMQConnection
-    const channel = await connection.createChannel();
-    const queue = 'orderCreated';
-
-    await channel.assertQueue(queue, { durable: true });
-
-    channel.consume(queue, async (msg) => {
-        if (msg !== null) {
-            const order = JSON.parse(msg.content.toString());
-            console.log(order)
-            const payment = createPaymentUseCase.execute({ orderId: order.id, status: "processed" })
-
-            // Publique um evento de pagamento processado
-            const paymentBuffer = Buffer.from(JSON.stringify(payment));
-            channel.sendToQueue('paymentProcessed', paymentBuffer);
-
-            channel.ack(msg);
-        }
-    })
-
-
-    
+    // Configura consumidor de ordem criada
+    const orderCreatedConsumer = new OrderCreatedQueueAdapterIN(rabbitMqUrl, createPaymentUseCase)
+    await orderCreatedConsumer.consume()   
 
     app.use('/', paymentsRouters(createPaymentController))
 

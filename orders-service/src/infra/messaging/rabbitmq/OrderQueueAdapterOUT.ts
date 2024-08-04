@@ -1,7 +1,7 @@
 import amqplib from "amqplib";
-import { IOrderCreatedQueueAdapterOUT } from "../../../domain/messaging/IOrderCreatedQueueAdapterOUT";
+import { IOrderQueueAdapterOUT } from "../../../domain/messaging/IOrderQueueAdapterOUT";
 
-export class  OrderQueueAdapterOUT implements IOrderCreatedQueueAdapterOUT{
+export class  OrderQueueAdapterOUT implements IOrderQueueAdapterOUT{
     
     private channel!: amqplib.ConfirmChannel;
 
@@ -27,20 +27,5 @@ export class  OrderQueueAdapterOUT implements IOrderCreatedQueueAdapterOUT{
                 }
             });
         })
-    }
-
-    async publish2(queueName: string, objectMessage: any): Promise<void> {
-
-        const messageBuffer = Buffer.from(JSON.stringify(objectMessage));
-
-        return new Promise((resolve, reject) => {
-            this.channel.sendToQueue(queueName, messageBuffer, {}, (err, ok) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        })
-    }
+    }    
 }
