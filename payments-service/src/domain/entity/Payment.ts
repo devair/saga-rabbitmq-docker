@@ -1,6 +1,6 @@
 
 export class Payment {
-  id: string | undefined
+  id?: string
   orderId: number
   status: string
 
