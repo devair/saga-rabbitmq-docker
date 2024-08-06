@@ -8,6 +8,7 @@ import { AppDataSource } from "../infra/persistence/ormconfig";
 import { OrderEntity } from "../infra/persistence/entity/OrderEntity";
 import { CreateOrderUserCase } from "../application/useCase/CreateOrderUseCase";
 import { OrderQueueAdapterOUT } from "../infra/messaging/rabbitmq/OrderQueueAdapterOUT";
+import { QueueNames } from "../domain/messaging/QueueNames"
 
 dotenv.config()
 
@@ -23,11 +24,11 @@ export const createApp = async () => {
 
     // Configura mensageria
     const rabbitMQConnection = await amqplib.connect(rabbitMqUrl);
-    const publisher = new OrderQueueAdapterOUT(rabbitMQConnection, "orderCreated")
-    await publisher.connect()
+    const orderCreatedPublisher = new OrderQueueAdapterOUT(rabbitMQConnection, QueueNames.ORDER_CREATED)
+    await orderCreatedPublisher.connect()
 
     // Configura caso de uso e interface
-    const createOrderUseCase = new CreateOrderUserCase(orderRepository, publisher)
+    const createOrderUseCase = new CreateOrderUserCase(orderRepository, orderCreatedPublisher)
     const orderController = new OrdersController(createOrderUseCase)
 
     app.use('/', orderRouters(orderController))

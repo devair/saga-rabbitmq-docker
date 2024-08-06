@@ -1,7 +1,7 @@
 import { Payment } from "../../domain/entity/Payment";
 import { IPaymentQueueAdapterOUT } from "../../domain/messaging/IPaymentQueueAdapterOUT";
 import { IPaymentsRepository } from "../../domain/repository/IPaymentsRepository";
-import { ICreatePaymentUseCase } from "../../domain/useCase/ICreateOrderUseCase";
+import { ICreatePaymentUseCase } from "../../domain/useCase/ICreatePaymentUseCase";
 import { AppDataSource } from "../../infra/persistence/ormconfig";
 
 export class CreatePaymentUserCase implements ICreatePaymentUseCase {

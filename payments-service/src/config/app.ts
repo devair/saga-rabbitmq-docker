@@ -9,6 +9,9 @@ import { AppDataSource } from "../infra/persistence/ormconfig";
 import { PaymentEntity } from "../infra/persistence/entity/PaymentEntity";
 import { paymentsRouters } from "../interface/routers/PaymentsRouters";
 import { OrderCreatedQueueAdapterIN } from  "../infra/messaging/OrderCreatedQueueAdapterIN"
+import { QueueNames } from "../domain/messaging/QueueNames"
+import { ApprovedPaymentUserCase } from "../application/useCase/ApprovedPaymentUserCase"
+import { ApprovedPaymentController } from "../interface/controllers/payments/ApprovedPaymentController"
 
 
 dotenv.config()
@@ -27,18 +30,24 @@ export const createApp = async () => {
 
     // Configura mensageria
     const rabbitMQConnection = await amqplib.connect(rabbitMqUrl);
-    const publisher = new PaymentQueueAdapterOUT(rabbitMQConnection, "paymentProcessed")
-    await publisher.connect()
+    const paymentPendingPublisher = new PaymentQueueAdapterOUT(rabbitMQConnection, QueueNames.PAYMENT_PENDING)
+    await paymentPendingPublisher.connect()
+
+    const paymentApprovedPublisher = new PaymentQueueAdapterOUT(rabbitMQConnection, QueueNames.PAYMENT_APPROVED)
+    await paymentApprovedPublisher.connect()
 
     // Configura caso de uso e interface
-    const createPaymentUseCase = new CreatePaymentUserCase(paymentsRepository, publisher)
-    const createPaymentController = new CreatePaymentController(createPaymentUseCase)
+    const createPaymentUseCase = new CreatePaymentUserCase(paymentsRepository, paymentPendingPublisher)
+    const createPaymentController = new CreatePaymentController(createPaymentUseCase)    
+    const approvedPaymentUserCase = new ApprovedPaymentUserCase(paymentsRepository, paymentApprovedPublisher)
+    const approvedPaymentController = new ApprovedPaymentController(approvedPaymentUserCase)
 
     // Configura consumidor de ordem criada
     const orderCreatedConsumer = new OrderCreatedQueueAdapterIN(rabbitMqUrl, createPaymentUseCase)
     await orderCreatedConsumer.consume()   
 
-    app.use('/', paymentsRouters(createPaymentController))
+    app.use('/', paymentsRouters(createPaymentController, approvedPaymentController))
+
 
     app.listen(3001, () => {
         console.log("Payments service listening on port 3001");

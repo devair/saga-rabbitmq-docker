@@ -7,8 +7,8 @@ export class OrdersController {
 
     async createOrder(req: Request, res: Response): Promise<Response> {
         try {            
-            const { item, quantity } = req.body            
-            const order = await this.createOrderUseCase.execute({ item, quantity });
+            const { item, quantity, amount } = req.body            
+            const order = await this.createOrderUseCase.execute({ item, quantity, amount });
             return res.status(201).json(order);
         } catch (error) {
             console.log(error)

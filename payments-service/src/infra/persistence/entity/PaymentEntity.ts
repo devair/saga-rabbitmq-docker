@@ -12,14 +12,24 @@ export class PaymentEntity {
 
     @Column({ nullable: false})
     status: string
+    
+    @Column({ nullable: false})
+    amount: number 
+    
+    @Column({ nullable: true})
+    paymentDate: Date | undefined
 
     constructor(){
         this._id = new ObjectId()    
         this.orderId = 0  
         this.status = ''  
+        this.amount = 0         
     }
     toDomain(): Payment {
-        let payment = new Payment(this.orderId, this.status)
+        let payment = new Payment(this.orderId, this.amount)
+        payment.status = this.status
+        payment.paymentDate = this.paymentDate
+        payment.amount = this.amount
         payment.id = this._id.toString()
         return payment
     }
@@ -31,6 +41,10 @@ export class PaymentEntity {
             paymentEntity._id = new ObjectId(payment.id)
         }
         paymentEntity.orderId = payment.orderId      
+        paymentEntity.amount = payment.amount
+        paymentEntity.paymentDate = payment.paymentDate
+        paymentEntity.status = payment.status
+
         return paymentEntity;
       }
 

@@ -15,6 +15,9 @@ export const OrderEntity = new EntitySchema<Order>({
         },
         quantity: {
             type: "numeric"
+        },
+        amount: {
+            type: "numeric", nullable: false
         }
     }
 })

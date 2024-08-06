@@ -12,19 +12,40 @@ const rabbitMqUrl = process.env.RABBITMQ_URL || 'amqp://localhost';
 AppDataSource.initialize().then(async () => {
   const connection = await amqp.connect(rabbitMqUrl);
   const channel = await connection.createChannel();
-  const queue = 'paymentProcessed';
+  const queue1 = 'paymentPending';
+  const queue2 = 'paymentApproved';
 
-  await channel.assertQueue(queue, { durable: true });
+  await channel.assertQueue(queue1, { durable: true });
 
-  channel.consume(queue, async (msg) => {
+  await channel.assertQueue(queue2, { durable: true });
+
+  channel.consume(queue1, async (msg) => {
     if (msg !== null) {
       const payment = JSON.parse(msg.content.toString());
 
       console.log(payment)
 
       const shippingRepository = AppDataSource.getRepository(Shipping);
-      const shipping = shippingRepository.create({ paymentId: payment._id, status: "shipped", orderId: payment.orderId });
+      const shipping = shippingRepository.create({ status: payment.status, orderId: payment.orderId });
       await shippingRepository.save(shipping);
+
+      channel.ack(msg);
+    }
+  });
+
+  channel.consume(queue2, async (msg) => {
+    if (msg !== null) {
+      const payment = JSON.parse(msg.content.toString());
+
+      console.log(payment)
+
+      const shippingRepository = AppDataSource.getRepository(Shipping);
+      const shipping = await shippingRepository.findOneBy({orderId: payment.orderId });
+
+      if(shipping){
+        shipping.status = payment.status
+        await shippingRepository.save(shipping);
+      }
 
       channel.ack(msg);
     }
