@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import express from "express";
-import { AppDataSource } from "./ormconfig";
-import { Shipping } from "./entity/Shipping";
+import { AppDataSource } from "./infra/persistence/ormconfig";
+import { Shipping } from "./domain/entity/Shipping";
 import amqp from 'amqplib';
 
 const app = express();

@@ -33,8 +33,7 @@ services:
       - postgres-orders-data:/var/lib/postgresql/data
   
   mongo-payments:
-    image: mongo
-    container_name: mongo    
+    image: mongo    
     ports:
       - '27017:27017'
 
@@ -43,17 +42,17 @@ services:
       - MONGODB_INITDB_ROOT_PASSWORD=docker
     volumes:
       - mongo-payments-data:/data/db  
-  
-  postgres-shipping:
-    image: postgres
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: shipping
+
+  mongo-shipping:
+    image: mongo    
     ports:
-      - "5435:5432" # Map the container's port 5432 to port 5435 on the host
+      - '27018:27017'
+
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=docker
+      - MONGODB_INITDB_ROOT_PASSWORD=docker
     volumes:
-      - postgres-shipping-data:/var/lib/postgresql/data
+      - mongo-shipping-data:/data/db  
 
   orders-service:
     build:
@@ -89,8 +88,7 @@ services:
       - "3001:3001"
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
-      - MONGO_URI=mongodb://mongo:27017/pagamentos
-      - POSTGRES_DB=payments
+      - MONGO_URI=mongodb://mongo-payments:27017/payments      
 
   shipping-service:
     build:
@@ -100,18 +98,13 @@ services:
       - ./shipping-service:/usr/src/app
     depends_on:
       - rabbitmq
-      - postgres-shipping
+      - mongo-shipping
     ports:
       - "3002:3002"
     environment:
       - RABBITMQ_URL=amqp://rabbitmq
-      - POSTGRES_HOST=postgres-shipping
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=shipping
-      
+      - MONGO_URI=mongodb://mongo-shipping:27018/shipping           
 volumes:
   postgres-orders-data:
   mongo-payments-data:
-  postgres-shipping-data:
+  mongo-shipping-data:
