@@ -31,6 +31,7 @@ export class PaymentEntity {
         payment.paymentDate = this.paymentDate
         payment.amount = this.amount
         payment.id = this._id.toString()
+        payment.orderId = this.orderId        
         return payment
     }
 

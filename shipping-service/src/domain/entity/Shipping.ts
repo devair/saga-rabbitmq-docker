@@ -5,7 +5,13 @@ export class Shipping {
 
   constructor(orderId: number) {
     this.orderId = orderId
-    this.status = ""
+    this.status = ShippingStatus.PENDING
   }
 
+}
+
+export enum ShippingStatus {
+  PENDING = "Pending",
+  APPROVED = "Approved",
+  REJECTED = "Rejected"
 }

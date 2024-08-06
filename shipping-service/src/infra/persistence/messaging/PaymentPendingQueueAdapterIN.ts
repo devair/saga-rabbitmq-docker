@@ -1,11 +1,12 @@
 import amqpCallback from "amqplib/callback_api"
-import { QueueNames } from "../../domain/messaging/QueueNames"
-import { ICreatePaymentUseCase } from "../../domain/useCase/ICreatePaymentUseCase"
+import { ICreateShippingUseCase } from "../../../domain/useCase/ICreateShippingUseCase"
+import { QueueNames } from "../../../domain/messaging/QueueNames"
 
-export class OrderCreatedQueueAdapterIN {
+
+export class PaymentPendingQueueAdapterIN {
     constructor(
         private rabbitMQUrl: string,
-        private createPaymentUseCase: ICreatePaymentUseCase
+        private createShippingUseCase: ICreateShippingUseCase
     ) { }
 
     async consume() {
@@ -17,19 +18,19 @@ export class OrderCreatedQueueAdapterIN {
                 if (err) {
                     throw err;
                 }
-                channel.assertQueue(QueueNames.ORDER_CREATED, { durable: true });
-                channel.consume(QueueNames.ORDER_CREATED, async (msg: any) => {
+                channel.assertQueue(QueueNames.PAYMENT_PENDING, { durable: true });
+                channel.consume(QueueNames.PAYMENT_PENDING, async (msg: any) => {
                     if (msg !== null) {
                         try {
                             // Processa a mensagem                            
                             const order = JSON.parse(msg.content.toString());
-                            console.log('Payment - Received:', order)
+                            console.log('Shipping - Received:', order)
 
                             // Aqui o servico persiste e publica na mesma transacao para o proximo canal
-                            await this.createPaymentUseCase.execute(order.id, order.amount)
+                            await this.createShippingUseCase.execute(order.orderId, order.amount)
                             channel.ack(msg);
                         } catch (error) {
-                            console.error('Processing error');
+                            console.error('Processing error', error);
                             // Rejeita a mensagem e reencaminha para a fila
                             channel.nack(msg);
                         }

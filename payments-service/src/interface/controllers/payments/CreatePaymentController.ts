@@ -9,7 +9,7 @@ export class CreatePaymentController {
     async handler(req: Request, res: Response): Promise<Response> {
         try {
             const { orderId, amount } = req.body
-            const order = await this.createPaymentUseCase.execute( new Payment(orderId, amount) );
+            const order = await this.createPaymentUseCase.execute( orderId, amount);
             return res.status(201).json(order);
         } catch (error) {
             console.log(error)

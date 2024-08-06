@@ -10,12 +10,15 @@ export class CreatePaymentUserCase implements ICreatePaymentUseCase {
         private publisher: IPaymentQueueAdapterOUT
     ) { }
 
-    async execute(paymentData: any): Promise<Payment> {
+    async execute(orderId: number, amount: number): Promise<Payment> {
         const queryRunner = AppDataSource.createQueryRunner()
 
         await queryRunner.startTransaction()
         try {
-            const createdPayment = await this.repository.create(paymentData)
+
+            const payment = new Payment(orderId, amount)
+
+            const createdPayment = await this.repository.create(payment)
 
             // Publicar evento de pagamento criado
             await this.publisher.publish(JSON.stringify(createdPayment))
